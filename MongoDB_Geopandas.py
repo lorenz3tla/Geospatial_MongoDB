@@ -29,24 +29,27 @@ bezirksgrenzen_data = list(bezirksgrenzen_col.find({}))
 
 abstellanlagen_col = mydb["fahrradabstellanlagen"]
 
-radindex = mydb['radindex'] #wird erst bef¸llt
+radindex = mydb['radindex'] #wird erst bef√ºllt
 
 #Index first Collection
 mycol["geometry"].create_index([("coordinates", GEO2D)])
 
+#Print elements of Collection
 for x in mycol.find():
   print(x)
 
 for x in mycol.find({},{ "_id": 0, "name": 1, "address": 1 }):
   print(x)
 
-#Aggregierungsfunktion - Citybikestationen in Wien
+#Group elements - Citybikestationen in Wien
 pipeline = [
   {"$group": {"_id" : "$properties.BEZIRK", #group by BEZIRK
               "stationen_pro_bezirk": {"$sum" : 1}}} #count
 ]
 
 citybike_json_bezirk = list(mycol.aggregate(pipeline))
+
+#Make Pandas Dataframe
 citybike_json_bezirk = pd.DataFrame(citybike_json_bezirk)
 citybike_bezirk = citybike_json_bezirk.sort_values('_id')
 citybike_bezirk.set_index('_id')
@@ -98,8 +101,8 @@ for document in bezirksgrenzen_col.find():
                           "flaeche" : document['properties']['FLAECHE'],
                           'count_abstellanlagen' : int(abstellanlagen_col.count_documents({"geometry": {"$geoWithin": {"$geometry":
                                 {"type": "Polygon", "coordinates": document['geometry']['coordinates']}}}})),
-        "count_citybike_stellpl‰tze" : int(citybike_bezirk.iloc[document['properties']['BEZNR']-1, stationen_pro_bezirk_index]),
-         "l‰nge_radwege_pro_bezirk" : bezirks_linien[document['properties']['BEZNR']-1]},
+        "count_citybike_stellpl√§tze" : int(citybike_bezirk.iloc[document['properties']['BEZNR']-1, stationen_pro_bezirk_index]),
+         "l√§nge_radwege_pro_bezirk" : bezirks_linien[document['properties']['BEZNR']-1]},
         'geometry': dict(document['geometry'])
     })
 
