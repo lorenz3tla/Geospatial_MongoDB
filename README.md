@@ -7,3 +7,6 @@ In the file you can see two different ways of how to aggregate data. The first o
 The second one ("#Radnetz pro Bezirk/district") uses geopandas to calculate the length of lines within different districts (INTERSECTION).
 
 The last step is to insert the new data into the new collection "radindex". This collection is also exported as geojson.
+
+https://github.com/geopandas/geopandas
+https://github.com/mongodb/mongo-python-driver
